@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Элементы DOM
     const loadBtn = document.getElementById('loadBtn');
     const createForm = document.getElementById('createForm');
     const titleInput = document.getElementById('title');
@@ -12,6 +11,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const GET_URL = 'https://jsonplaceholder.typicode.com/posts?_limit=5';
     const POST_URL = 'https://jsonplaceholder.typicode.com/posts';
+
+    function renderPost(post) {
+        const postElement = document.createElement('div');
+        postElement.className = 'publication-item';
+
+        const titleElement = document.createElement('h3');
+        titleElement.textContent = post.title;
+
+        const bodyElement = document.createElement('p');
+        bodyElement.textContent = post.body;
+
+        postElement.appendChild(titleElement);
+        postElement.appendChild(bodyElement);
+        publicationsList.appendChild(postElement);
+    }
 
     function showLoading(isLoading, message = 'Загрузка...') {
         if (isLoading) {
@@ -47,31 +61,17 @@ document.addEventListener('DOMContentLoaded', () => {
     loadBtn.addEventListener('click', async () => {
         clearMessages();
         showLoading(true, 'Загрузка публикаций...');
-        publicationsList.textContent = ''; 
+        publicationsList.textContent = '';
 
         try {
             const response = await fetch(GET_URL);
-            
+
             if (!response.ok) {
                 throw new Error(`Ошибка HTTP: ${response.status} ${response.statusText}`);
             }
-            
+
             const posts = await response.json();
-            
-            posts.forEach(post => {
-                const postElement = document.createElement('div');
-                postElement.className = 'publication-item';
-                
-                const titleElement = document.createElement('h3');
-                titleElement.textContent = post.title;
-                
-                const bodyElement = document.createElement('p');
-                bodyElement.textContent = post.body;
-                
-                postElement.appendChild(titleElement);
-                postElement.appendChild(bodyElement);
-                publicationsList.appendChild(postElement);
-            });
+            posts.forEach(renderPost);
         } catch (error) {
             showError(`Не удалось загрузить публикации: ${error.message}. Попробуйте еще раз.`);
         } finally {
@@ -80,10 +80,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     createForm.addEventListener('submit', async (event) => {
-        event.preventDefault(); 
+        event.preventDefault();
         clearMessages();
 
-        
         const title = titleInput.value.trim();
         const body = bodyInput.value.trim();
 
@@ -114,9 +113,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const result = await response.json();
+
+            renderPost(result);
+
             showSuccess(`Публикация успешно создана! ID: ${result.id}, Заголовок: "${result.title}"`);
-            createForm.reset(); 
-            
+            createForm.reset();
+
         } catch (error) {
             showError(`Не удалось создать публикацию: ${error.message}. Попробуйте еще раз.`);
         } finally {
