@@ -68,12 +68,12 @@ h1, h2 {
 }
 
 .secondary-btn {
-    background-color: #1e6050;
+    background-color: #282a2a;
     color: white;
 }
 
 .secondary-btn:hover:not(:disabled) {
-    background-color: #174a3d;
+    background-color: #414141;
 }
 
 .secondary-btn:disabled {
